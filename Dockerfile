@@ -23,6 +23,8 @@ USER rserve
 ## Change username and provice PASSWORD
 ENV USERNAME rserve
 
+RUN mkdir ${RSERVE_HOME}/work
+
 EXPOSE 6311
 
-CMD ${RSERVE_HOME}/bin/run_rserve.sh
+CMD ["/opt/rserve/bin/run_rserve.sh"]
