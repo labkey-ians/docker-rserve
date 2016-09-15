@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 if [[ -z "${PASSWORD}" ]]; then
 	echo "Must provide env PASSWORD"
