@@ -1,4 +1,4 @@
-FROM r-base
+FROM r-base:3.3.1
 
 MAINTAINER Jordan Walker <jiwalker@usgs.gov>
 
