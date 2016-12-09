@@ -6,7 +6,7 @@ version: '2'
 #
 # Ex: $ doi_network="true" docker-compose build
 
-networks: 
+networks:
   rservenet:
 
 services:
@@ -15,13 +15,12 @@ services:
       context: .
       args:
         - doi_network=$doi_network
-    image: rserve
-    environment:
-      - PASSWORD=rserve
+    image: usgs/rserve
     ports:
       - "6311:6311"
     networks:
       rservenet:
         aliases:
         - rserve
-    
+    env_file:
+      - "compose${AUTH_ENV_LOCAL}.env"
