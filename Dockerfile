@@ -1,34 +1,42 @@
-FROM r-base:3.3.2
+FROM r-base:3.4.3
 
-MAINTAINER Jordan Walker <jiwalker@usgs.gov>
+MAINTAINER Ian Sigmon <ians@labkey.com>
 
-RUN apt-get update && apt-get install telnet -y
-
-ARG doi_network=false
-
-RUN if [ "${doi_network}" = true ]; then \
-		/usr/bin/wget -O /usr/lib/ssl/certs/DOIRootCA.crt http://blockpage.doi.gov/images/DOIRootCA.crt && \
-		ln -sf /usr/lib/ssl/certs/DOIRootCA.crt /usr/lib/ssl/certs/`openssl x509 -hash -noout -in /usr/lib/ssl/certs/DOIRootCA.crt`.0 && \
-		echo "\\n\\nca-certificate = /usr/lib/ssl/certs/DOIRootCA.crt" >> /etc/wgetrc; \
-	fi
+RUN apt-get update \
+	&& apt-get install -y telnet \
+		libcairo2-dev \
+		libxt-dev
 
 RUN install.r Rserve \
 	&& rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN install.r Cairo
 
 ENV RSERVE_HOME /opt/rserve
 
-RUN useradd rserve \
+RUN addgroup --gid 1042 wg
+RUN useradd -G 1042 -u 1001 rserve \
 	&& mkdir ${RSERVE_HOME} \
 	&& usermod -d ${RSERVE_HOME} rserve
 
+RUN usermod -a -G 1000 rserve
 
 COPY etc ${RSERVE_HOME}/etc
 
-RUN chown -R rserve:rserve ${RSERVE_HOME}
+# DON'T DO THIS
+RUN echo 'rserve\nrserve\n' > /opt/rserve/etc/Rserv.pwd
+
+RUN chown -R rserve:1000 ${RSERVE_HOME}
 
 COPY run_rserve.sh ${RSERVE_HOME}/bin/
 
-RUN chmod 755 ${RSERVE_HOME}/bin/run_rserve.sh
+RUN chmod -R 775 ${RSERVE_HOME}
+
+RUN mkdir /volumes \
+	&& mkdir /volumes/data \
+	&& chown -R :1000 /volumes/data/
+RUN mkdir /volumes/reports_temp \
+	&& chown -R :1000 /volumes/reports_temp/
+RUN chmod -R 775 /volumes
 
 USER rserve
 
