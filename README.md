@@ -1,3 +1,17 @@
+Here is the run command I used. I haven't really refined this yet. The jist is that the container user needs to have volume read/write access in the host system using the uid/gid supplied to the run command: 
+
+```
+docker run -it -d -p 6311:6311 \
+	-v ~/docker/volumes/rserve/data:/volumes/data \
+	-v ~/docker/volumes/rserve/reports_temp:/volumes/reports_temp \
+	-u 1000:1042 \
+	-e USERNAME=rserve -e PASSWORD=rserve \
+	--rm \
+	--name rserve usgs/rserve
+```
+The two volumes are the paths needed by the LabKey reports, and are the mappings supplied to the configured engine
+The readme below is copied from the original RServe container repo.
+
 Docker RServe
 ===
 
