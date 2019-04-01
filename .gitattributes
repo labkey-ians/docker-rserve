@@ -1,0 +1,3 @@
+* text=auto
+
+run_rserve.sh text eol=lf
